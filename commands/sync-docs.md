@@ -87,18 +87,7 @@ Connectivity notes, proxy, known issues.
 What auth methods exist (NEVER include actual secrets, tokens, or passwords).
 ```
 
-### 4. `DECISIONS.md` — Decision Log (append-only)
-```markdown
-# Decision Log
-
-## YYYY-MM-DD: Decision Title
-**Context:** Why this came up
-**Decision:** What was decided
-**Alternatives Considered:** What else was considered
-**Outcome:** Result so far
-```
-
-### 5. `TROUBLESHOOTING.md` — Known Issues & Fixes
+### 4. `TROUBLESHOOTING.md` — Known Issues & Fixes
 ```markdown
 # Troubleshooting Guide
 
@@ -113,12 +102,19 @@ What auth methods exist (NEVER include actual secrets, tokens, or passwords).
 
 1. **Read before write** — Always read existing files first. MERGE new information, don't overwrite. Preserve existing content that's still valid.
 2. **Mark outdated** — If you find information that's no longer accurate, update it and note what changed.
-3. **Append decisions** — DECISIONS.md is append-only. Never remove old decisions.
-4. **Selective update** — Only update files where you have meaningful new information. Don't rewrite files with no changes.
-5. **Timestamp everything** — Every updated file gets a fresh `Last Updated` timestamp.
-6. **Be specific** — Include exact versions, port numbers, file paths, config values. Vague descriptions are useless after compaction.
-7. **Include "why"** — For every decision or config choice, explain WHY, not just WHAT.
-8. **No secrets** — NEVER write API keys, tokens, passwords, or credentials into any file. Only document what auth methods exist.
+3. **Selective update** — Only update files where you have meaningful new information. Don't rewrite files with no changes.
+4. **Timestamp everything** — Every updated file gets a fresh `Last Updated` timestamp.
+5. **Be specific** — Include exact versions, port numbers, file paths, config values. Vague descriptions are useless after compaction.
+6. **Include "why"** — For every decision or config choice, explain WHY, not just WHAT.
+7. **No secrets** — NEVER write API keys, tokens, passwords, or credentials into any file. Only document what auth methods exist.
+8. **Rich commit messages** — The git commit IS the decision log. Write commit messages that include context, rationale, and alternatives considered. Use this format:
+   ```
+   docs: <what changed>
+
+   Context: <why this came up>
+   Alternatives: <what else was considered, why rejected>
+   ```
+   This replaces a separate DECISIONS.md — `git log` is the decision history.
 9. **Git commit + push** — After updating, stage changed files and commit. If `--push` flag or remote is configured, push automatically.
 
 ## Execution Steps

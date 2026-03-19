@@ -64,7 +64,6 @@ ln -sf ~/claude-skills/commands/*.md ~/.claude/commands/
 ├── STATUS.md           # Active workstreams, recent changes, blockers
 ├── ARCHITECTURE.md     # Components, data flow, config, dependencies
 ├── ENVIRONMENT.md      # Hardware, software, services, network
-├── DECISIONS.md        # Append-only decision log with rationale
 └── TROUBLESHOOTING.md  # Known issues, root causes, fixes
 
 # With --project gb10:
@@ -76,13 +75,15 @@ ln -sf ~/claude-skills/commands/*.md ~/.claude/commands/
         └── ...
 ```
 
+Decisions are recorded in **git commit messages** (not a separate file) — `git log` is the decision history.
+
 ## Design Principles
 
 - **Merge, don't overwrite** — new info is merged with existing content
 - **Selective update** — only touch files with meaningful changes
-- **Append-only decisions** — decision log never deletes entries
+- **Decisions in commits** — rich commit messages with context/rationale replace a separate decision log
 - **Be specific** — exact versions, ports, paths, config values
-- **Record "why"** — every decision includes rationale
+- **Record "why"** — every commit message includes rationale
 - **No secrets** — never write API keys, tokens, or passwords
 - **Auto-commit + push** — git commit always, push with `--push`
 
