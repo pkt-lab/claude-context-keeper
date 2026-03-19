@@ -1,23 +1,23 @@
 # claude-skills
 
-Claude Code slash commands for persistent work context management.
+Claude Code skills for persistent work context management.
 
 ## Problem
 
-After compaction, context window reset, or long work sessions, Claude loses critical details — architecture decisions, environment specifics, debugging history, and work status. These commands persist knowledge to structured markdown files in any git repo, surviving any context loss.
+After compaction, context window reset, or long work sessions, Claude loses critical details — architecture decisions, environment specifics, debugging history, and work status. These skills persist knowledge to structured markdown files in your project's `docs/` directory, surviving any context loss.
 
-## Commands
+## Skills
 
-### `/sync-docs [path] [options]`
-Full sync of all documentation: STATUS, ARCHITECTURE, ENVIRONMENT, TROUBLESHOOTING.
+### `/sync-docs [path] [--push] [--project name]`
+Full sync of all documentation: STATUS, ARCHITECTURE, ENVIRONMENT, TROUBLESHOOTING. Run after major changes or at task boundaries.
 
-### `/sync-status [path] [options]`
-Quick update of STATUS.md only. Lightweight, run frequently.
+### `/sync-status [path] [--push] [--project name]`
+Quick update of STATUS.md only. Lightweight, run frequently — before compaction, switching tasks, or ending a session.
 
-### `/sync-arch [path] [options]`
-Update ARCHITECTURE.md only. Run after structural changes.
+### `/sync-arch [path] [--push] [--project name]`
+Update ARCHITECTURE.md only. Run after adding/removing components, changing configs, or updating dependencies.
 
-### Options (all commands)
+### Options
 
 | Flag | Description |
 |------|-------------|
@@ -31,6 +31,8 @@ git clone https://github.com/pkt-lab/claude-skills.git ~/claude-skills
 cd ~/claude-skills && ./install.sh
 ```
 
+This creates symlinks in `~/.claude/skills/` pointing to the repo. Restart Claude Code to see the `/sync-*` commands in autocomplete.
+
 Or manually:
 ```bash
 mkdir -p ~/.claude/skills
@@ -38,8 +40,6 @@ ln -sfn ~/claude-skills/skills/sync-docs ~/.claude/skills/sync-docs
 ln -sfn ~/claude-skills/skills/sync-status ~/.claude/skills/sync-status
 ln -sfn ~/claude-skills/skills/sync-arch ~/.claude/skills/sync-arch
 ```
-
-Restart Claude Code after installation to see the new `/sync-*` commands.
 
 ## Usage
 
@@ -63,16 +63,16 @@ Restart Claude Code after installation to see the new `/sync-*` commands.
 
 ## Output Structure
 
-By default, docs live alongside your code:
+Docs live alongside your code:
 
 ```
 <project-root>/
 ├── src/
-├── docs/                 # created by sync commands
-│   ├── STATUS.md
-│   ├── ARCHITECTURE.md
-│   ├── ENVIRONMENT.md
-│   └── TROUBLESHOOTING.md
+├── docs/                 # created by sync skills
+│   ├── STATUS.md         # workstreams, recent changes, blockers
+│   ├── ARCHITECTURE.md   # components, data flow, config, deps
+│   ├── ENVIRONMENT.md    # hardware, software, services, network
+│   └── TROUBLESHOOTING.md # known issues, root causes, fixes
 ├── CLAUDE.md
 └── ...
 
@@ -81,21 +81,35 @@ By default, docs live alongside your code:
 └── docs/
     └── myapp/
         ├── STATUS.md
-        ├── ARCHITECTURE.md
         └── ...
 ```
 
-Decisions are recorded in **git commit messages** (not a separate file) — `git log` is the decision history.
+Decisions are recorded in **git commit messages** — `git log` is the decision history.
+
+## Repo Structure
+
+```
+claude-skills/
+├── skills/                  # modern Claude Code skills format
+│   ├── sync-docs/SKILL.md
+│   ├── sync-status/SKILL.md
+│   └── sync-arch/SKILL.md
+├── commands/                # legacy format (backward compat)
+│   ├── sync-docs.md
+│   ├── sync-status.md
+│   └── sync-arch.md
+├── install.sh
+└── README.md
+```
 
 ## Design Principles
 
 - **Merge, don't overwrite** — new info is merged with existing content
 - **Selective update** — only touch files with meaningful changes
-- **Decisions in commits** — rich commit messages with context/rationale replace a separate decision log
+- **Decisions in commits** — rich commit messages with context/rationale
 - **Be specific** — exact versions, ports, paths, config values
-- **Record "why"** — every commit message includes rationale
+- **Record "why"** — every change includes rationale
 - **No secrets** — never write API keys, tokens, or passwords
-- **Auto-commit + push** — git commit always, push with `--push`
 
 ## License
 
