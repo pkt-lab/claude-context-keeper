@@ -90,14 +90,10 @@ Decisions are recorded in **git commit messages** — `git log` is the decision 
 
 ```
 claude-skills/
-├── skills/                  # modern Claude Code skills format
+├── skills/
 │   ├── sync-docs/SKILL.md
 │   ├── sync-status/SKILL.md
 │   └── sync-arch/SKILL.md
-├── commands/                # legacy format (backward compat)
-│   ├── sync-docs.md
-│   ├── sync-status.md
-│   └── sync-arch.md
 ├── install.sh
 └── README.md
 ```

@@ -13,11 +13,4 @@ for skill_dir in "$SCRIPT_DIR"/skills/*/; do
     echo "Linked: /$(echo "$name" | tr '-' '-')"
 done
 
-# Clean up legacy commands if they exist
-if [ -d "$HOME/.claude/commands" ]; then
-    for cmd in sync-docs sync-status sync-arch; do
-        rm -f "$HOME/.claude/commands/${cmd}.md"
-    done
-fi
-
 echo "Done. Restart Claude Code to see new slash commands."
