@@ -33,9 +33,13 @@ cd ~/claude-skills && ./install.sh
 
 Or manually:
 ```bash
-mkdir -p ~/.claude/commands
-ln -sf ~/claude-skills/commands/*.md ~/.claude/commands/
+mkdir -p ~/.claude/skills
+ln -sfn ~/claude-skills/skills/sync-docs ~/.claude/skills/sync-docs
+ln -sfn ~/claude-skills/skills/sync-status ~/.claude/skills/sync-status
+ln -sfn ~/claude-skills/skills/sync-arch ~/.claude/skills/sync-arch
 ```
+
+Restart Claude Code after installation to see the new `/sync-*` commands.
 
 ## Usage
 

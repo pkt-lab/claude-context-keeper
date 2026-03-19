@@ -1,16 +1,23 @@
 #!/bin/bash
-# Install claude-skills commands into Claude Code
+# Install claude-skills into Claude Code
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-CLAUDE_CMD_DIR="$HOME/.claude/commands"
+CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
 
-mkdir -p "$CLAUDE_CMD_DIR"
+mkdir -p "$CLAUDE_SKILLS_DIR"
 
-for cmd in "$SCRIPT_DIR"/commands/*.md; do
-    name=$(basename "$cmd")
-    ln -sf "$cmd" "$CLAUDE_CMD_DIR/$name"
-    echo "Linked: $name"
+for skill_dir in "$SCRIPT_DIR"/skills/*/; do
+    name=$(basename "$skill_dir")
+    ln -sfn "$skill_dir" "$CLAUDE_SKILLS_DIR/$name"
+    echo "Linked: /$(echo "$name" | tr '-' '-')"
 done
 
-echo "Done. Commands available in Claude Code."
+# Clean up legacy commands if they exist
+if [ -d "$HOME/.claude/commands" ]; then
+    for cmd in sync-docs sync-status sync-arch; do
+        rm -f "$HOME/.claude/commands/${cmd}.md"
+    done
+fi
+
+echo "Done. Restart Claude Code to see new slash commands."
