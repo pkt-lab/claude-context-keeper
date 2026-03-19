@@ -9,7 +9,7 @@ After compaction, context window reset, or long work sessions, Claude loses crit
 ## Commands
 
 ### `/sync-docs [path] [options]`
-Full sync of all documentation: STATUS, ARCHITECTURE, ENVIRONMENT, DECISIONS, TROUBLESHOOTING.
+Full sync of all documentation: STATUS, ARCHITECTURE, ENVIRONMENT, TROUBLESHOOTING.
 
 ### `/sync-status [path] [options]`
 Quick update of STATUS.md only. Lightweight, run frequently.
