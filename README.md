@@ -40,31 +40,37 @@ ln -sf ~/claude-skills/commands/*.md ~/.claude/commands/
 ## Usage
 
 ```bash
-# Sync to current working directory (must be a git repo)
+# Default: writes to <git-root>/docs/ in current project
 /sync-docs
 /sync-status
 /sync-arch
 
-# Sync to a specific repo
-/sync-docs ~/my-project
-/sync-status ~/infra-docs
+# With auto-push
+/sync-docs --push
 
-# Multi-project repo with auto-push
+# Target a different repo
+/sync-docs ~/other-repo
+/sync-status ~/other-repo --push
+
+# Multi-project repo
 /sync-docs ~/infra-docs --project myapp --push
 /sync-status ~/infra-docs --project backend --push
-
-# Just architecture, auto-push
-/sync-arch ~/my-project --push
 ```
 
 ## Output Structure
 
+By default, docs live alongside your code:
+
 ```
-<target>/
-├── STATUS.md           # Active workstreams, recent changes, blockers
-├── ARCHITECTURE.md     # Components, data flow, config, dependencies
-├── ENVIRONMENT.md      # Hardware, software, services, network
-└── TROUBLESHOOTING.md  # Known issues, root causes, fixes
+<project-root>/
+├── src/
+├── docs/                 # created by sync commands
+│   ├── STATUS.md
+│   ├── ARCHITECTURE.md
+│   ├── ENVIRONMENT.md
+│   └── TROUBLESHOOTING.md
+├── CLAUDE.md
+└── ...
 
 # With --project myapp:
 <target>/

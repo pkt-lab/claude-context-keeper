@@ -5,21 +5,22 @@ Focused update of `ARCHITECTURE.md`. Use after structural changes (new component
 ## Arguments
 
 Parse `$ARGUMENTS`:
-- If empty: use current working directory
-- If a local path: use that directory
+- If empty: write to `docs/` in current git repo root (`git rev-parse --show-toplevel`)
+- If a local path: write to `<path>/docs/`
 - `--push`: auto-push after commit
 - `--project <name>`: scope to `docs/<name>/ARCHITECTURE.md`
 
 Examples:
 ```
-/sync-arch
-/sync-arch ~/my-project --push
+/sync-arch                                      # <git-root>/docs/ARCHITECTURE.md
+/sync-arch --push                               # same + push
+/sync-arch ~/other-repo --push
 /sync-arch ~/infra-docs --project myapp --push
 ```
 
 ## Steps
-1. Parse arguments, determine target path
-2. Read existing `ARCHITECTURE.md` (create if missing)
+1. Parse arguments, resolve target to `<root>/docs/` directory
+2. Read existing `docs/ARCHITECTURE.md` (create if missing)
 3. Scan conversation and codebase for architectural changes:
    - New/removed components
    - Changed data flows

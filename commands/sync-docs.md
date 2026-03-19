@@ -5,18 +5,20 @@ You are a documentation synchronization agent. Your job is to capture the curren
 ## Arguments
 
 Parse `$ARGUMENTS` as follows:
-- If empty: use current working directory (must be a git repo with docs, or create docs in it)
-- If a local path: use that directory as the target repo
+- If empty: write to `docs/` subdirectory in the current working directory's git repo root
+- If a local path: use that directory as the target
 - If `--push` flag is present: auto-push after commit
-- If `--project <name>` is specified: scope docs under a `docs/<name>/` subdirectory (for multi-project repos)
+- If `--project <name>` is specified: scope docs under `docs/<name>/` subdirectory (for multi-project repos)
+
+**Default behavior**: Find the git root of the current working directory (`git rev-parse --show-toplevel`), then write to `<git-root>/docs/`. This keeps documentation co-located with the project code. Create the `docs/` directory if it doesn't exist.
 
 Examples:
 ```
-/sync-docs                                    # current dir
-/sync-docs ~/my-project                       # specific repo
-/sync-docs --push                             # current dir + push
-/sync-docs ~/infra-docs --project myapp        # scoped under docs/myapp/
-/sync-docs ~/infra-docs --project myapp --push # scoped + push
+/sync-docs                                     # writes to <git-root>/docs/
+/sync-docs --push                              # same + push
+/sync-docs ~/other-repo                        # writes to ~/other-repo/docs/
+/sync-docs ~/infra-docs --project myapp        # writes to ~/infra-docs/docs/myapp/
+/sync-docs ~/infra-docs --project myapp --push # same + push
 ```
 
 ## What to Capture
@@ -121,7 +123,11 @@ What auth methods exist (NEVER include actual secrets, tokens, or passwords).
 
 1. **Parse arguments** — Determine target directory, project scope, and push flag.
 
-2. **Ensure target is a git repo** — If not, `git init`. If `--project` specified, create `docs/<project>/` subdirectory.
+2. **Resolve target directory**:
+   - No args: `git rev-parse --show-toplevel` to find git root, then use `<git-root>/docs/`
+   - Path given: use `<path>/docs/`
+   - `--project`: use `<target>/docs/<project>/`
+   - Create directories if they don't exist. If not in a git repo and no path given, error out.
 
 3. **Gather context** (adapt to what's available — skip irrelevant checks):
    - Read conversation history for recent work details
