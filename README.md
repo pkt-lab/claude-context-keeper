@@ -8,23 +8,20 @@ When Claude's context gets compacted, the session ends, or you start a fresh age
 
 ## Skills
 
-### `/sync-docs [path] [--push] [--project name] [--docs-repo path] [--save-config]`
-Full sync of all documentation: STATUS, ARCHITECTURE, ENVIRONMENT, TROUBLESHOOTING. Run after major changes or at task boundaries.
+### `/ctx-save [path] [--push] [--project name] [--docs-repo path] [--save-config]`
+Save current work context to docs. Updates all 4 files (STATUS, ARCHITECTURE, ENVIRONMENT, TROUBLESHOOTING), skipping any where nothing meaningful changed. Run at task boundaries, before compaction, after debugging sessions, or whenever you want to checkpoint progress.
 
-### `/sync-status [path] [--push] [--project name] [--docs-repo path] [--save-config]`
-Quick update of STATUS.md only. Lightweight, run frequently — before compaction, switching tasks, or ending a session.
-
-### `/sync-arch [path] [--push] [--project name] [--docs-repo path] [--save-config]`
-Update ARCHITECTURE.md only. Run after adding/removing components, changing configs, or updating dependencies.
+### `/ctx-load [path] [--project name] [--docs-repo path]`
+Load saved context back into the conversation. Reads all doc files and outputs them so the session has full project context. Run at session start, after compaction, or when you need to recall what was happening.
 
 ### Options
 
 | Flag | Description |
 |------|-------------|
-| `--push` | Auto `git push` after commit |
+| `--push` | Auto `git push` after commit (ctx-save only) |
 | `--project <name>` | Scope docs under `docs/<name>/` subdirectory |
-| `--docs-repo <path>` | Write docs to a separate repo (auto-derives project from working repo basename) |
-| `--save-config` | Persist `--docs-repo` mapping for this working repo in `~/.config/claude-skills/config.json` |
+| `--docs-repo <path>` | Write/read docs from a separate repo (auto-derives project from working repo basename) |
+| `--save-config` | Persist `--docs-repo` mapping for this working repo in `~/.config/claude-skills/config.json` (ctx-save only) |
 
 ## Installation
 
@@ -38,7 +35,7 @@ Update ARCHITECTURE.md only. Run after adding/removing components, changing conf
 /plugin install context-keeper@pkt-lab-claude-context-keeper
 ```
 
-After installing as a plugin, skills are namespaced: `/context-keeper:sync-docs`, `/context-keeper:sync-status`, `/context-keeper:sync-arch`.
+After installing as a plugin, skills are namespaced: `/context-keeper:ctx-save`, `/context-keeper:ctx-load`.
 
 ### Via git clone + symlink
 
@@ -47,35 +44,36 @@ git clone https://github.com/pkt-lab/claude-context-keeper.git ~/claude-context-
 cd ~/claude-context-keeper && ./install.sh
 ```
 
-This creates symlinks in `~/.claude/skills/` so skills appear as `/sync-docs`, `/sync-status`, `/sync-arch`.
+This creates symlinks in `~/.claude/skills/` so skills appear as `/ctx-save`, `/ctx-load`.
 
 ### Manual
 
 ```bash
 mkdir -p ~/.claude/skills
-ln -sfn ~/claude-context-keeper/skills/sync-docs ~/.claude/skills/sync-docs
-ln -sfn ~/claude-context-keeper/skills/sync-status ~/.claude/skills/sync-status
-ln -sfn ~/claude-context-keeper/skills/sync-arch ~/.claude/skills/sync-arch
+ln -sfn ~/claude-context-keeper/skills/ctx-save ~/.claude/skills/ctx-save
+ln -sfn ~/claude-context-keeper/skills/ctx-load ~/.claude/skills/ctx-load
 ```
 
 ## Usage
 
 ```bash
-# Default: writes to <git-root>/docs/ in current project
-/sync-docs
-/sync-status
-/sync-arch
+# Save context to <git-root>/docs/
+/ctx-save
 
-# With auto-push
-/sync-docs --push
+# Save with auto-push
+/ctx-save --push
 
-# Target a different repo
-/sync-docs ~/other-repo
-/sync-status ~/other-repo --push
+# Save to a different repo
+/ctx-save ~/other-repo
 
 # Multi-project repo
-/sync-docs ~/infra-docs --project myapp --push
-/sync-status ~/infra-docs --project backend --push
+/ctx-save ~/infra-docs --project myapp --push
+
+# Load context at session start
+/ctx-load
+
+# Load from a specific project
+/ctx-load --project myapp
 ```
 
 ## Private Docs Repo
@@ -86,15 +84,14 @@ For public/open-source repos where environment details, hardware specs, or debug
 
 ```bash
 # One-time: save the mapping so future runs auto-resolve
-/sync-docs --docs-repo ~/private-docs --save-config
+/ctx-save --docs-repo ~/private-docs --save-config
 
 # From now on, bare commands auto-resolve via config
-/sync-docs          # → ~/private-docs/docs/my-public-app/
-/sync-status        # → ~/private-docs/docs/my-public-app/STATUS.md
-/sync-arch          # → ~/private-docs/docs/my-public-app/ARCHITECTURE.md
+/ctx-save           # → ~/private-docs/docs/my-public-app/
+/ctx-load           # → ~/private-docs/docs/my-public-app/
 
 # One-off without saving
-/sync-docs --docs-repo ~/private-docs
+/ctx-save --docs-repo ~/private-docs
 ```
 
 ### How It Works
@@ -110,7 +107,7 @@ For public/open-source repos where environment details, hardware specs, or debug
 ```
 <project-root>/
 ├── src/
-├── docs/                 # created by sync skills
+├── docs/                 # created by /ctx-save
 │   ├── STATUS.md         # workstreams, recent changes, blockers
 │   ├── ARCHITECTURE.md   # components, data flow, config, deps
 │   ├── ENVIRONMENT.md    # hardware, software, services, network
@@ -144,9 +141,8 @@ claude-context-keeper/
 ├── .claude-plugin/
 │   └── plugin.json            # plugin manifest for marketplace install
 ├── skills/
-│   ├── sync-docs/SKILL.md     # full context sync
-│   ├── sync-status/SKILL.md   # quick status update
-│   └── sync-arch/SKILL.md     # architecture update
+│   ├── ctx-save/SKILL.md      # save context to docs
+│   └── ctx-load/SKILL.md      # load context from docs
 ├── install.sh                 # symlink installer (alternative to plugin)
 ├── LICENSE
 └── README.md
